@@ -3,7 +3,7 @@ version: "3.9"
 services:
   api:
     container_name: forum-api
-    build: .
+    build: ./api
     image: forum-api
     ports:
       - "3000:3000"
@@ -26,7 +26,7 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=12345
     volumes:
-      - node_db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
 
 volumes:
-  node_db_data: {}
+  db_data: {}
