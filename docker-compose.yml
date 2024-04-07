@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  api:
+    container_name: forum-api
+    build: .
+    image: forum-api
+    ports:
+      - "3000:3000"
+    environment:
+      - PG_DB=api_db
+      - PG_USER=user
+      - PG_PASSWORD=12345
+      - PG_HOST=db-postgres
+    restart: always
+    depends_on:
+      - db-postgres
+
+  db-postgres:
+    container_name: db-postgres
+    image: postgres:alpine3.19
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=api_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    volumes:
+      - node_db_data:/var/lib/postgresql/data
+
+volumes:
+  node_db_data: {}
