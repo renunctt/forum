@@ -1,8 +1,8 @@
 export class ApiError extends Error {
   status: number
-  errors: Error[]
+  errors: unknown[]
 
-  constructor(status: number, message: string, errors: Error[] = []) {
+  constructor(status: number, message: string, errors: unknown[] = []) {
     super(message)
     this.status = status
     this.errors = errors
@@ -12,7 +12,7 @@ export class ApiError extends Error {
     return new ApiError(401, 'Пользователь не авторизован')
   }
 
-  static BadRequest = (message: string, errors: Error[] = []) => {
+  static BadRequest = (message: string, errors: unknown[] = []) => {
     return new ApiError(400, message, errors)
   }
 }
