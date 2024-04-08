@@ -42,6 +42,11 @@ class UserService {
 
     return { ...tokens, user: userDto }
   }
+
+  logout = async (refreshToken: string) => {
+    const token = await tokenService.removeToken(refreshToken)
+    return token
+  }
 }
 
 export default new UserService()

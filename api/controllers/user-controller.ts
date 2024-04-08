@@ -31,6 +31,17 @@ class UserController {
       next(e)
     }
   }
+
+  logout: Handler = async (req, res, next) => {
+    try {
+      const {refereshToken} = req.cookies
+      const token = await userService.logout(refereshToken)
+      res.clearCookie('refreshToken')
+      return res.json(token)
+    } catch (e) {
+      next(e)
+    }
+  }
 }
 
 export default new UserController()
