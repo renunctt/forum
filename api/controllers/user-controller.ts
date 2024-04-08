@@ -53,6 +53,15 @@ class UserController {
       next(e)
     }
   }
+
+  getUsers: Handler = async (_, res, next) => {
+    try {
+      const users = await userService.getUsers()
+      return res.json({users})
+    } catch (e) {
+      next(e)
+    }
+  }
 }
 
 export default new UserController()
