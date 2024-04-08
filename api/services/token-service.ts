@@ -38,6 +38,29 @@ class TokenService {
     const tokenData = await TokenModel.destroy({where: {refreshToken}})
     return tokenData
   }
+
+  validateAccessToken = (token: string) => {
+    try {
+      const userData = jwt.verify(token, this.accessSecret)
+      return userData
+    } catch (e) {
+      return null
+    }
+  }
+
+  validateRefreshToken = (token: string) => {
+    try {
+      const userData = jwt.verify(token, this.refreshSecret)
+      return userData
+    } catch (e) {
+      return null
+    }
+  }
+
+  findToken = async (refreshToken: string) => {
+    const tokenData = await TokenModel.findOne({where: {refreshToken}})
+    return tokenData
+  }
 }
 
 export default new TokenService()
