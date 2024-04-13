@@ -4,8 +4,6 @@ import { ApiError } from '../exeptions/api-error'
 import userService from '../services/user-service'
 import cookieService from '../services/cookie-service'
 
-const THIRTY_DAYS_IN_MS = 30 * 24 * 60 * 60 * 1000
-
 class UserController {
   registration: Handler = async (req, res, next) => {
     try {
@@ -15,7 +13,7 @@ class UserController {
       }
       const { name, email, password } = req.body
       const userData = await userService.registration(name, email, password)
-      cookieService.setRefreshTokenCookie(res, userData.refreshToken, THIRTY_DAYS_IN_MS)
+      cookieService.setRefreshTokenCookie(res, userData.refreshToken)
       return res.json(userData)
     } catch (e) {
       next(e)
@@ -26,7 +24,7 @@ class UserController {
     try {
       const { email, password } = req.body
       const userData = await userService.login(email, password)
-      cookieService.setRefreshTokenCookie(res, userData.refreshToken, THIRTY_DAYS_IN_MS)
+      cookieService.setRefreshTokenCookie(res, userData.refreshToken)
       return res.json(userData)
     } catch (e) {
       next(e)
@@ -48,7 +46,7 @@ class UserController {
     try {
       const { refreshToken } = req.cookies
       const userData = await userService.refresh(refreshToken)
-      cookieService.setRefreshTokenCookie(res, userData.refreshToken, THIRTY_DAYS_IN_MS)
+      cookieService.setRefreshTokenCookie(res, userData.refreshToken)
       return res.json(userData)
     } catch (e) {
       next(e)
