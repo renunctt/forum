@@ -2,6 +2,7 @@ import type { Handler } from 'express'
 import { validationResult } from 'express-validator'
 import { ApiError } from '../exeptions/api-error'
 import userService from '../services/user-service'
+import cookieService from '../services/cookie-service'
 
 const THIRTY_DAYS_IN_MS = 30 * 24 * 60 * 60 * 1000
 
@@ -14,7 +15,7 @@ class UserController {
       }
       const { name, email, password } = req.body
       const userData = await userService.registration(name, email, password)
-      res.cookie('refreshToken', userData.refreshToken, { maxAge: THIRTY_DAYS_IN_MS, httpOnly: true })
+      cookieService.setRefreshTokenCookie(res, userData.refreshToken, THIRTY_DAYS_IN_MS)
       return res.json(userData)
     } catch (e) {
       next(e)
@@ -25,7 +26,7 @@ class UserController {
     try {
       const { email, password } = req.body
       const userData = await userService.login(email, password)
-      res.cookie('refreshToken', userData.refreshToken, { maxAge: THIRTY_DAYS_IN_MS, httpOnly: true })
+      cookieService.setRefreshTokenCookie(res, userData.refreshToken, THIRTY_DAYS_IN_MS)
       return res.json(userData)
     } catch (e) {
       next(e)
@@ -34,8 +35,8 @@ class UserController {
 
   logout: Handler = async (req, res, next) => {
     try {
-      const { refereshToken } = req.cookies
-      const token = await userService.logout(refereshToken)
+      const { refreshToken } = req.cookies
+      const token = await userService.logout(refreshToken)
       res.clearCookie('refreshToken')
       return res.json(token)
     } catch (e) {
@@ -47,7 +48,7 @@ class UserController {
     try {
       const { refreshToken } = req.cookies
       const userData = await userService.refresh(refreshToken)
-      res.cookie('refreshToken', userData.refreshToken, { maxAge: THIRTY_DAYS_IN_MS, httpOnly: true })
+      cookieService.setRefreshTokenCookie(res, userData.refreshToken, THIRTY_DAYS_IN_MS)
       return res.json(userData)
     } catch (e) {
       next(e)
@@ -57,7 +58,7 @@ class UserController {
   getUsers: Handler = async (_, res, next) => {
     try {
       const users = await userService.getUsers()
-      return res.json({users})
+      return res.json({ users })
     } catch (e) {
       next(e)
     }
