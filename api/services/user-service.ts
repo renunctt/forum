@@ -3,6 +3,7 @@ import { ApiError } from '../exeptions/api-error'
 import UserModel from '../models/user-model'
 import bcrypt from 'bcrypt'
 import tokenService from './token-service'
+import PostModel from '../models/post-model'
 
 class UserService {
   registration = async (name: string, email: string, password: string) => {
@@ -69,8 +70,22 @@ class UserService {
 
   getUsers = async () => {
     const users = await UserModel.findAll()
-    const usersDto = users.map(user => new UserDto(user))
+    const usersDto = users.map((user) => new UserDto(user))
     return usersDto
+  }
+
+  createPost = async (refreshToken: string, title: string, content: string, tags: string | '') => {
+    if (!refreshToken) {
+      throw ApiError.UnauthorizedError()
+    }
+    const userData = tokenService.validateRefreshToken(refreshToken)
+    const toknefromDb = await tokenService.findToken(refreshToken)
+    if (!userData || !toknefromDb) {
+      throw ApiError.UnauthorizedError()
+    }
+
+    const post = PostModel.create({ userId: userData.id, author: userData.name, title, content, tags })
+    return post
   }
 }
 
