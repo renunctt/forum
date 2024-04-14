@@ -61,6 +61,17 @@ class UserController {
       next(e)
     }
   }
+  
+  createPost: Handler = async (req, res, next) => {
+    try {
+      const { refreshToken } = req.cookies
+      const { title, content, tags = '' } = req.body
+      const post = await userService.createPost(refreshToken, title, content, tags)
+      return res.json(post)
+    } catch (e) {
+      next(e)
+    }
+  }
 }
 
 export default new UserController()
